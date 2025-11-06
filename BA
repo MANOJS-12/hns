@@ -1,0 +1,88 @@
+install.packages(c("kernlab", "ggplot2"))
+library(kernlab)
+library(ggplot2)
+--------------------------------------------------------------------------------------------------
+# Experiment 5: Dimensionality Reduction using PCA, KPCA, and SVD
+
+# Load dataset
+data(iris)
+X <- iris[, 1:4]
+
+# ---------------------------
+# 1️⃣ PCA
+# ---------------------------
+pca_result <- prcomp(X, center = TRUE, scale. = TRUE)
+summary(pca_result)
+
+# Plot PCA
+pca_df <- data.frame(pca_result$x[, 1:2], Species = iris$Species)
+ggplot(pca_df, aes(PC1, PC2, color = Species)) +
+  geom_point(size = 2) +
+  ggtitle("PCA - 2D Projection")
+
+# ---------------------------
+# 2️⃣ Kernel PCA
+# ---------------------------
+kpca_result <- kpca(~., data = X, kernel = "rbfdot", kpar = list(sigma = 0.1), features = 2)
+kpca_df <- data.frame(rotated(kpca_result), Species = iris$Species)
+ggplot(kpca_df, aes(X1, X2, color = Species)) +
+  geom_point(size = 2) +
+  ggtitle("Kernel PCA (RBF)")
+
+# ---------------------------
+# 3️⃣ SVD
+ 
+
+# ---------------------------
+X_scaled <- scale(X)
+svd_result <- svd(X_scaled)
+svd_df <- data.frame(svd_result$u[, 1:2], Species = iris$Species)
+ggplot(svd_df, aes(X1, X2, color = Species)) +
+  geom_point(size = 2) +
+  ggtitle("SVD - 2D Projection")
+
+# Load dataset
+data <- iris
+
+# --- Bivariate Analysis ---
+plot(data$Sepal.Length, data$Petal.Length, 
+     main = "Bivariate Analysis",
+     xlab = "Sepal Length", ylab = "Petal Length", col = "blue", pch = 19)
+
+# --- Correlation ---
+cor(data$Sepal.Length, data$Petal.Length)
+
+# --- Multivariate Analysis (Pairs Plot) ---
+pairs(data[,1:4], col = data$Species, pch = 19, main = "Multivariate Analysis")
+
+# --- Using GGally ---
+install.packages("GGally")
+library(GGally)
+ggpairs(data, aes(color = Species))
+
+# Experiment 7: Scatter, Histogram, Box Plot, Bar Plot
+
+data(iris)
+
+# 1️⃣ SCATTER PLOT
+ 
+
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) +
+  geom_point(size = 2) +
+  ggtitle("Scatter Plot - Sepal vs Petal Length")
+
+# 2️⃣ HISTOGRAM
+ggplot(iris, aes(x = Sepal.Length, fill = Species)) +
+  geom_histogram(bins = 20, alpha = 0.7, position = "identity") +
+  ggtitle("Histogram - Sepal Length Distribution")
+
+# 3️⃣ BOX PLOT
+ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
+  geom_boxplot() +
+  ggtitle("Box Plot - Sepal Length by Species")
+
+# 4️⃣ BAR PLOT
+avg_petal <- aggregate(Petal.Width ~ Species, data = iris, FUN = mean)
+ggplot(avg_petal, aes(x = Species, y = Petal.Width, fill = Species)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Bar Plot - Average Petal Width by Species")
